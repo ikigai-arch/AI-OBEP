@@ -48,10 +48,10 @@ Hasil (surrogate ensemble, 5 seed × 500 generasi; ukuran paper: 30 seed):
 
 | Kasus | Solusi A (energi min) | Solusi B (komfort terbaik) |
 |---|---|---|
-| 1 (sederhana) | hemat 5,4% energi, f_tc 2,4% lebih buruk | f_tc 1,1% lebih baik, energi −0,1% |
-| 2 (Watson) | hemat 9,4%, f_tc 8,5% lebih buruk | f_tc 6,9% lebih baik, energi 5,0% lebih boros |
+| 1 (sederhana) | hemat 6,2% energi, f_tc 0,8% lebih buruk | f_tc 2,4% lebih baik, energi 0,2% lebih boros |
+| 2 (Watson) | hemat 11,0%, f_tc 11,4% lebih buruk | f_tc 13,3% lebih baik, energi 1,7% lebih boros |
 
-Angka paper (≈12% hemat, komfort +5–14%) tidak sepenuhnya terulang karena surrogate-nya lemah. Hasil optimasi tidak lebih baik dari surrogate-nya; jangan baca sebagai klaim penghematan nyata.
+Angka paper (≈11,7–12% hemat, komfort +5–14%) cukup dekat, tetapi jangan baca sebagai klaim penghematan nyata: surrogate-nya lemah (R² ~0,47) sehingga optimasi hanya sebaik surrogate itu. Solusi A/B adalah titik ekstrem dari gabungan semua front (semua algoritma & seed). Hypervolume ternormalisasi: kasus 1 ≈0,0575–0,0577 (ketiganya setara); kasus 2 NSGA-II 0,094 > NSGA-III 0,091 > SMS-EMOA 0,089 (urutan NSGA-II terbaik sama dengan paper).
 
 **Asumsi saya** (paper tidak merinci): surrogate dilatih pada kantor R3+R4 lalu dipakai untuk semua ruangan termasuk ruang rapat; bobot ruangan w_j = 1 (energi absolut kW); kedalaman ruang B dipilih sendiri (4 m / 3 m); kondisi luar kasus 1 & 2 sama dengan paper (27,5 °C, 85%, 650 W/m², 1 m/s); η mutasi dianggap simpangan baku dalam meter; hypervolume dinormalisasi dengan nilai layout awal (ref 1,2). R-NSGA-II tidak diimplementasikan.
 
