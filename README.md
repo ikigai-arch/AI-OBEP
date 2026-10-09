@@ -52,6 +52,3 @@ Hasil (surrogate ensemble, 5 seed × 500 generasi; ukuran paper: 30 seed):
 Angka paper (≈11,7–12% hemat, komfort +5–14%) cukup dekat, tetapi jangan baca sebagai klaim penghematan nyata: surrogate-nya lemah (R² ~0,47) sehingga optimasi hanya sebaik surrogate itu. Solusi A/B adalah titik ekstrem dari gabungan semua front (semua algoritma & seed). Hypervolume ternormalisasi: kasus 1 ≈0,0575–0,0577 (ketiganya setara); kasus 2 NSGA-II 0,094 > NSGA-III 0,091 > SMS-EMOA 0,089 (urutan NSGA-II terbaik sama dengan paper).
 
 **Asumsi saya** (paper tidak merinci): surrogate dilatih pada kantor R3+R4 lalu dipakai untuk semua ruangan termasuk ruang rapat; bobot ruangan w_j = 1 (energi absolut kW); kedalaman ruang B dipilih sendiri (4 m / 3 m); kondisi luar kasus 1 & 2 sama dengan paper (27,5 °C, 85%, 650 W/m², 1 m/s); η mutasi dianggap simpangan baku dalam meter; hypervolume dinormalisasi dengan nilai layout awal (ref 1,2). R-NSGA-II tidak diimplementasikan.
-
-## 4. Pertanyaan untuk Miss Sahidah (arah AI-OBEP)
-Replikasi ini memakai variabel keputusan paper (posisi dinding), padahal AI-OBEP belum menetapkan: (1) variabel keputusan (setpoint? dinding? jadwal?), (2) definisi comfort (PMV atau proxy), (3) ruangan hardware. Karena setpoint ada di data (`temp_setpoint`) tetapi bukan input surrogate paper, varian "setpoint + okupansi" butuh keputusan itu dulu.
