@@ -1,21 +1,19 @@
 # AI-OBEP — model ML untuk memahami ROBOD + replikasi paper "data-driven multi-objective optimisation … flexible building spaces"
 
-Repo ini punya tiga tahap, masing-masing satu skrip (jalankan berurutan):
+Repo ini punya tiga tahap, masing-masing satu notebook di `notebooks/` (jalankan berurutan; logika inti ada di modul `src/aiobep/`):
 
-| Skrip | Isi | Output |
+| Notebook | Isi | Output |
 |---|---|---|
-| `scripts/01_explore_dataset.py` | Memahami ROBOD: profil harian, okupansi vs energi, data hilang, sensor proxy okupansi | `outputs/eda/` |
-| `scripts/02_train_surrogate.py` | Surrogate energi HVAC per ruangan (7 fitur → energi), model zoo termasuk **MLP** + weighted ensemble | `outputs/surrogate_*.csv`, `fig_surrogate_performance.png` |
-| `scripts/03_run_optimisation.py` | Optimasi multi-objektif posisi dinding (NSGA-II / NSGA-III / SMS-EMOA, pymoo) di dua studi kasus paper | `outputs/opt_ensemble/` |
+| `notebooks/01_explore_dataset.ipynb` | Memahami ROBOD: profil harian, okupansi vs energi, data hilang, sensor proxy okupansi | `outputs/eda/` |
+| `notebooks/02_train_surrogate.ipynb` | Surrogate energi HVAC per ruangan (7 fitur → energi), model zoo termasuk **MLP** + weighted ensemble | `outputs/surrogate_*.csv`, `fig_surrogate_performance.png` |
+| `notebooks/03_run_optimisation.ipynb` | Optimasi multi-objektif posisi dinding (NSGA-II / NSGA-III / SMS-EMOA, pymoo) di dua studi kasus paper | `outputs/opt_ensemble/` |
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt jupyter
 unzip SupplementaryData.zip -d data/raw      # 5 file combined_Room*.csv (data/raw tidak di-commit)
-python scripts/01_explore_dataset.py
-python scripts/02_train_surrogate.py
-python scripts/03_run_optimisation.py --seeds 5 --gens 500   # paper: 30 seed
-python scripts/03_run_optimisation.py --model surrogate_mlp  # pakai MLP sebagai surrogate
+jupyter lab notebooks/                        # jalankan 01 -> 02 -> 03
 ```
+Di notebook 03 ubah `SEEDS` (paper: 30), `MODEL = "surrogate_mlp"` untuk memakai MLP, atau `QUICK = True` untuk uji cepat (1 seed, 30 generasi, output ke `outputs/_quick`).
 
 ## 1. Memahami dataset ROBOD
 5 ruangan gedung SDE4 NUS (Singapura), 5 menit, 7 Sep–23 Des 2021, hari kerja saja.

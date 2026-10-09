@@ -1,4 +1,4 @@
-room,spearman_occ_vs_energy,spearman_outdoorT_vs_energy,spearman_solar_vs_energy
+room,spearman_occ,spearman_outdoorT,spearman_solar
 1,0.45,-0.13,-0.02
 2,0.25,0.01,0.05
 3,0.12,-0.03,0.13
