@@ -1,0 +1,2 @@
+algo,seed,n_solutions,hypervolume_norm,best_f_cost,best_f_tc
+NSGA-II,1,24,0.07265423528944658,5.358686536007761,0.5459819570275607
