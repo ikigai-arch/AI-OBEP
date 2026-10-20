@@ -66,12 +66,14 @@ class WallSetpointMutation(Mutation):
         super().__init__(prob=1.0)
         self.sc, self.p_m, self.eta_m, self.sigma_t = sc, p_m, eta_m, sigma_t
 
-    def _do(self, problem, X, **kwargs):
+    def _do(self, problem, X, *args, random_state=None, **kwargs):
+        # pymoo >= 0.6.2 passes a generator seeded by minimize(seed=...); use it so runs are reproducible
+        rng = random_state if random_state is not None else np.random.default_rng()
         X = X.copy()
         nw = self.sc.n_walls
         sd = np.r_[np.full(nw, self.eta_m), np.full(self.sc.n_zones, self.sigma_t)]
-        hit = np.random.random(X.shape) < self.p_m
-        X = X + hit * np.random.normal(0.0, 1.0, X.shape) * sd
+        hit = rng.random(X.shape) < self.p_m
+        X = X + hit * rng.normal(0.0, 1.0, X.shape) * sd
         X = np.clip(X, problem.xl, problem.xu)
         X[:, :nw] = np.sort(X[:, :nw], axis=1)
         return X

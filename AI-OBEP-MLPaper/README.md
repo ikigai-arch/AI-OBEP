@@ -12,7 +12,7 @@ Plus **feature importance** (SHAP + permutation).
 
 | | Hasil | Pembanding |
 |---|---|---|
-| Surrogate, protokol paper (12 hari, 5 menit) | **R² = 0,949** (weighted ensemble), MAPE 11,7 % | Lyu et al.: R² 0,933, MAPE 26,1 % |
+| Surrogate, protokol paper (12 hari, 5 menit) | **R² = 0,949**, MAPE 11,0 % (XGBoost-PSO) | Lyu et al.: R² 0,933, MAPE 26,1 % |
 | Surrogate, protokol ketat (hari utuh di-*hold-out*, per jam) | **R² = 0,941**, CV(RMSE) 27,3 %, NMBE −4,1 % | ASHRAE Guideline 14 (per jam): CV(RMSE) ≤ 30 %, NMBE ≤ ±10 % → **lolos** |
 | Efek tuning PSO pada surrogate (CV 24 hari) | RMSE 46,3 → **36,4 W/m²** (−21 %), R² 0,904 → 0,940 | PSO > HHO ≈ GA |
 | NSGA-II, hiperparameter paper | 96,5 % / 95,8 % HV *reference front* (kasus 1 / 2) | — |
@@ -99,14 +99,16 @@ Catatan jujur: pada 5 hari test, semua model ≈ 0,94 sehingga tidak bisa dibeda
 - Test (5 hari hold-out): R² **0,941**, CV(RMSE) **27,3 %**, NMBE **−4,1 %**, MAPE 16,1 %.
 - Grouped-CV (24 hari): R² 0,940.
 
-Protokol persis paper (`paper_protocol_metrics.csv`, `paper_protocol_tuned.csv`):
+Protokol persis paper (`paper_protocol_metrics.csv`, `paper_protocol_tuned.csv`; tuning: 100 evaluasi, fitness = RMSE validasi 15 %, test 15 % tidak dipakai saat tuning). PSO menurunkan RMSE validasi 0,409 → 0,330 kWh/5 menit (−19 %):
 
 | Model | R² | MAPE % |
 |---|---|---|
 | ExtraTrees (default) | 0,954 | 10,5 |
 | WeightedEnsemble_L2 (sklearn, analog AutoGluon) | 0,949 | 11,7 |
 | XGBoost (default) | 0,946 | 11,6 |
-| PAPER_PROTOCOL_TUNED_ROWS |
+| **XGBoost-PSO** (tuning pada protokol ini, rata-rata 2 seed) | **0,949** | **11,0** |
+| XGBoost-HHO | 0,947 | 11,5 |
+| XGBoost-GA | 0,947 | 11,4 |
 | **Lyu et al. — AutoGluon WeightedEnsemble_L2** | 0,933 | 26,1 |
 | Lyu et al. — LSTM | 0,921 | 19,4 |
 
