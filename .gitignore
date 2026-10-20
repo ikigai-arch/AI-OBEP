@@ -3,3 +3,4 @@ __pycache__/
 data/raw/
 .ipynb_checkpoints/
 outputs/models/
+outputs/_quick/

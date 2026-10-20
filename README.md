@@ -1,21 +1,19 @@
 # AI-OBEP — model ML untuk memahami ROBOD + replikasi paper "data-driven multi-objective optimisation … flexible building spaces"
 
-Repo ini punya tiga tahap, masing-masing satu skrip (jalankan berurutan):
+Repo ini punya tiga tahap, masing-masing satu notebook di `notebooks/` (jalankan berurutan; logika inti ada di modul `src/aiobep/`):
 
-| Skrip | Isi | Output |
+| Notebook | Isi | Output |
 |---|---|---|
-| `scripts/01_explore_dataset.py` | Memahami ROBOD: profil harian, okupansi vs energi, data hilang, sensor proxy okupansi | `outputs/eda/` |
-| `scripts/02_train_surrogate.py` | Surrogate energi HVAC per ruangan (7 fitur → energi), model zoo termasuk **MLP** + weighted ensemble | `outputs/surrogate_*.csv`, `fig_surrogate_performance.png` |
-| `scripts/03_run_optimisation.py` | Optimasi multi-objektif posisi dinding (NSGA-II / NSGA-III / SMS-EMOA, pymoo) di dua studi kasus paper | `outputs/opt_ensemble/` |
+| `notebooks/01_explore_dataset.ipynb` | Memahami ROBOD: profil harian, okupansi vs energi, data hilang, sensor proxy okupansi | `outputs/eda/` |
+| `notebooks/02_train_surrogate.ipynb` | Surrogate energi HVAC per ruangan (7 fitur → energi), model zoo termasuk **MLP** + weighted ensemble | `outputs/surrogate_*.csv`, `fig_surrogate_performance.png` |
+| `notebooks/03_run_optimisation.ipynb` | Optimasi multi-objektif posisi dinding (NSGA-II / NSGA-III / SMS-EMOA, pymoo) di dua studi kasus paper | `outputs/opt_ensemble/` |
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt jupyter
 unzip SupplementaryData.zip -d data/raw      # 5 file combined_Room*.csv (data/raw tidak di-commit)
-python scripts/01_explore_dataset.py
-python scripts/02_train_surrogate.py
-python scripts/03_run_optimisation.py --seeds 5 --gens 500   # paper: 30 seed
-python scripts/03_run_optimisation.py --model surrogate_mlp  # pakai MLP sebagai surrogate
+jupyter lab notebooks/                        # jalankan 01 -> 02 -> 03
 ```
+Di notebook 03 ubah `SEEDS` (paper: 30), `MODEL = "surrogate_mlp"` untuk memakai MLP, atau `QUICK = True` untuk uji cepat (1 seed, 30 generasi, output ke `outputs/_quick`).
 
 ## 1. Memahami dataset ROBOD
 5 ruangan gedung SDE4 NUS (Singapura), 5 menit, 7 Sep–23 Des 2021, hari kerja saja.
@@ -54,6 +52,3 @@ Hasil (surrogate ensemble, 5 seed × 500 generasi; ukuran paper: 30 seed):
 Angka paper (≈11,7–12% hemat, komfort +5–14%) cukup dekat, tetapi jangan baca sebagai klaim penghematan nyata: surrogate-nya lemah (R² ~0,47) sehingga optimasi hanya sebaik surrogate itu. Solusi A/B adalah titik ekstrem dari gabungan semua front (semua algoritma & seed). Hypervolume ternormalisasi: kasus 1 ≈0,0575–0,0577 (ketiganya setara); kasus 2 NSGA-II 0,094 > NSGA-III 0,091 > SMS-EMOA 0,089 (urutan NSGA-II terbaik sama dengan paper).
 
 **Asumsi saya** (paper tidak merinci): surrogate dilatih pada kantor R3+R4 lalu dipakai untuk semua ruangan termasuk ruang rapat; bobot ruangan w_j = 1 (energi absolut kW); kedalaman ruang B dipilih sendiri (4 m / 3 m); kondisi luar kasus 1 & 2 sama dengan paper (27,5 °C, 85%, 650 W/m², 1 m/s); η mutasi dianggap simpangan baku dalam meter; hypervolume dinormalisasi dengan nilai layout awal (ref 1,2). R-NSGA-II tidak diimplementasikan.
-
-## 4. Pertanyaan untuk Miss Sahidah (arah AI-OBEP)
-Replikasi ini memakai variabel keputusan paper (posisi dinding), padahal AI-OBEP belum menetapkan: (1) variabel keputusan (setpoint? dinding? jadwal?), (2) definisi comfort (PMV atau proxy), (3) ruangan hardware. Karena setpoint ada di data (`temp_setpoint`) tetapi bukan input surrogate paper, varian "setpoint + okupansi" butuh keputusan itu dulu.
