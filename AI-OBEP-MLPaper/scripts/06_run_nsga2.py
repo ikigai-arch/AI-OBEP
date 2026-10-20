@@ -118,16 +118,19 @@ for sc in (case_study_1(), case_study_2()):
                     room_T=np.round(e["T"][0], 2).tolist(), room_pmv=np.round(e["pmv"][0], 3).tolist(),
                     worst_abs_pmv=float(worst_abs_pmv(e)[0]))
 
-    # "Balanced" = best energy among solutions where every occupant is within |PMV| <= 0.5
-    ev_ref = evaluate(sc, sur, refX)
-    okref = np.where(worst_abs_pmv(ev_ref) <= 0.5)[0]
-    sols = {"A (min energy)": refF[:, 0].argmin(), "B (best comfort)": refF[:, 1].argmin()}
-    if len(okref):
-        sols["C (min energy with all |PMV|<=0.5)"] = okref[refF[okref, 0].argmin()]
+    # A / B from the reference front. C = lowest energy among ALL final solutions in which
+    # every occupant has |PMV| <= 0.5 (a worst-room condition, so C can lie off the front,
+    # which is non-dominated on the *average* |PMV|).
+    sols = {"A (min energy)": (refX[refF[:, 0].argmin()], refF[refF[:, 0].argmin()]),
+            "B (best comfort)": (refX[refF[:, 1].argmin()], refF[refF[:, 1].argmin()])}
+    ok_all = np.where(worst_abs_pmv(evaluate(sc, sur, allX)) <= 0.5)[0]
+    if len(ok_all):
+        i = ok_all[allF[ok_all, 0].argmin()]
+        sols["C (min energy with all |PMV|<=0.5)"] = (allX[i], allF[i])
     info = dict(baseline_24C=dict(f_cost=float(f0[0]), f_tc=float(f0[1]),
                                   room_pmv=np.round(base["pmv"][0], 3).tolist()),
                 hv_reference_front=hv_ref, n_reference_points=len(refF),
-                **{k: describe(refX[i], refF[i]) for k, i in sols.items()})
+                **{k: describe(x, f) for k, (x, f) in sols.items()})
     best_cfg = agg.hv_mean.idxmax()
     info["best_config_by_mean_hv"] = best_cfg
     info["best_config_hyperparameters"] = configs[best_cfg]
@@ -144,15 +147,15 @@ for sc in (case_study_1(), case_study_2()):
     o = np.argsort(refF[:, 0])
     ax.plot(refF[o, 0] / f0[0], refF[o, 1] / f0[1], color=INK, lw=1.2, label="Reference front")
     ax.scatter([1], [1], marker="s", s=40, color=INK, zorder=5)
-    ax.annotate("Baseline 24 °C", (1, 1), xytext=(-6, 6), textcoords="offset points", ha="right",
+    ax.annotate("Baseline 24 °C", (1, 1), xytext=(-6, -12), textcoords="offset points", ha="right",
                 fontsize=8, color=INK2)
-    for k, i in sols.items():
-        ax.scatter(refF[i, 0] / f0[0], refF[i, 1] / f0[1], s=36, facecolor="white", edgecolor=INK, zorder=6)
-        ax.annotate(k.split(" ")[0], (refF[i, 0] / f0[0], refF[i, 1] / f0[1]), xytext=(5, 4),
+    for k, (_, f) in sols.items():
+        ax.scatter(f[0] / f0[0], f[1] / f0[1], s=36, facecolor="white", edgecolor=INK, zorder=6)
+        ax.annotate(k.split(" ")[0], (f[0] / f0[0], f[1] / f0[1]), xytext=(5, 4),
                     textcoords="offset points", fontsize=9, fontweight="bold")
     ax.set(xlabel="Energy f_cost / baseline", ylabel="Comfort penalty f_tc / baseline",
            title=f"{sc.name}: NSGA-II Pareto fronts")
-    ax.legend(fontsize=7, markerscale=2, loc="upper right")
+    ax.legend(fontsize=7, markerscale=2, loc="upper left", bbox_to_anchor=(1.02, 1.0))
     fig.savefig(fig_dir / f"fig_{sc.name}_pareto.png")
 
     fig, ax = plt.subplots(figsize=(4.8, 3.2))
@@ -169,7 +172,7 @@ for sc in (case_study_1(), case_study_2()):
     fig.savefig(fig_dir / f"fig_{sc.name}_hv_convergence.png")
 
     fig, axs = plt.subplots(len(sols) + 1, 1, figsize=(9, 1.25 * (len(sols) + 1) + 0.6))
-    panels = [("Baseline (24 °C)", sc.baseline(), f0)] + [(k, refX[i], refF[i]) for k, i in sols.items()]
+    panels = [("Baseline (24 °C)", sc.baseline(), f0)] + [(k, x, f) for k, (x, f) in sols.items()]
     cmap = plt.get_cmap("Blues")
     for a, (title, x, f) in zip(axs, panels):
         e = evaluate(sc, sur, x[None])
