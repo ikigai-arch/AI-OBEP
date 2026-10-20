@@ -11,8 +11,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+# Resolve the project root relative to this script instead of relying on a
+# hard-coded archive path. This keeps the import path valid when the project is
+# opened or executed from different machine locations.
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
+SRC = ROOT / "src"
+if not SRC.exists():
+    # Some layouts keep the package under an extra project directory.
+    SRC = ROOT / "AI-OBEP" / "src"
+if SRC.exists():
+    sys.path.insert(0, str(SRC))
 from aiobep.data import FEATURES, ROOM_INFO, load_rooms  # noqa: E402
 
 out = ROOT / "outputs" / "eda"
