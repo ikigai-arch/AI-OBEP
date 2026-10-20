@@ -15,9 +15,10 @@ Plus **feature importance** (SHAP + permutation).
 | Surrogate, protokol paper (12 hari, 5 menit) | **R² = 0,949**, MAPE 11,0 % (XGBoost-PSO) | Lyu et al.: R² 0,933, MAPE 26,1 % |
 | Surrogate, protokol ketat (hari utuh di-*hold-out*, per jam) | **R² = 0,941**, CV(RMSE) 27,3 %, NMBE −4,1 % | ASHRAE Guideline 14 (per jam): CV(RMSE) ≤ 30 %, NMBE ≤ ±10 % → **lolos** |
 | Efek tuning PSO pada surrogate (CV 24 hari) | RMSE 46,3 → **36,4 W/m²** (−21 %), R² 0,904 → 0,940 | PSO > HHO ≈ GA |
-| NSGA-II, hiperparameter paper | 96,5 % / 95,8 % HV *reference front* (kasus 1 / 2) | — |
-| NSGA-II, hiperparameter hasil tuning HHO | **99,2 % / 98,6 %** HV *reference front*, IGD+ turun ≈ 50 % | p < 0,001 (Mann–Whitney, 30 seed) |
-| Penghematan energi vs layout awal @24 °C, semua penghuni \|PMV\| ≤ 0,5 | **16,6 % / 22,7 %** (solusi C) | paper: ≈ 10–12 % (tanpa setpoint) |
+| NSGA-II, hiperparameter paper | 96,2 % / 95,6 % HV *reference front* (kasus 1 / 2) | — |
+| NSGA-II, hiperparameter hasil tuning metaheuristik | **98,0–99,3 %** HV *reference front* (terbaik: GA-tuned kasus 1, PSO-tuned kasus 2) | p < 0,001 (Mann–Whitney, 30 seed) |
+| Penghematan energi vs layout awal @24 °C, semua penghuni \|PMV\| ≤ 0,5 | **18,3 % / 26,3 %** (solusi C) | paper: ≈ 10–12 % (tanpa setpoint) |
+| …di antaranya kontribusi dinding bergerak saja (tanpa ubah setpoint) | 1,1 % / 6,4 % | paper: 11,7 % / 12,0 % |
 
 ## Cara menjalankan
 
@@ -64,7 +65,7 @@ Model lama di repo ini (R3+R4 digabung) hanya R² ≈ 0,47. Mengikuti paper dan 
 | 2. + penghalusan outlier (Hampel → rata-rata titik tetangga, seperti paper) | 0,847 | 0,839 | 46,6 % |
 | 3. + agregasi per jam (meredam *cycling* katup chilled water) | 0,907 | 0,880 | 38,9 % |
 | 4. + fitur jam (sin/cos) & jadwal HVAC on/off | 0,939 | 0,942 | 27,1 % |
-| 5. + tuning hyperparameter metaheuristik (PSO) | — | 0,941 | 27,3 % |
+| 5. + tuning hyperparameter metaheuristik (PSO) | — | 0,940 | 27,5 % |
 | 6. + *monotone constraint* fisik | — | 0,941 | 27,3 % |
 
 Langkah 6: energi dipaksa tidak turun saat penghuni, suhu luar, atau radiasi surya naik. Tujuannya agar NSGA-II tidak "mengeksploitasi" lekukan non-fisik surrogate. Biayanya hanya +0,2 % CV-RMSE.
@@ -164,10 +165,10 @@ Paper memakai Optuna; di sini PSO, GA, HHO.
 - Fitness = HV ternormalisasi rata-rata 3 seed tuning (101–103, **terpisah** dari seed akhir 1–30) pada **budget evaluasi tetap** 3.000, agar populasi besar tidak menang hanya karena mendapat evaluasi lebih banyak.
 - Setiap metaheuristik: 50 evaluasi × 2 seed per kasus.
 
-| HV saat tuning (mean ± sd) | PSO | GA | HHO |
+| HV saat tuning (mean ± sd, 2 seed) | PSO | GA | HHO |
 |---|---|---|---|
-| Kasus 1 | 0,9968 ± 0,0011 | 0,9983 ± 0,0023 | **1,0010 ± 0,0006** |
-| Kasus 2 | 1,0931 ± 0,0053 | 1,0955 ± 0,0155 | **1,0979 ± 0,0008** |
+| Kasus 1 | 0,9994 ± 0,0007 | 0,9985 ± 0,0040 | **1,0038 ± 0,0010** |
+| Kasus 2 | 1,0913 ± 0,0089 | 1,0888 ± 0,0149 | **1,0995 ± 0,0084** |
 
 ### 5.2 Akurasi NSGA-II (30 seed × 25.000 evaluasi = 500 generasi × 50 seperti paper)
 
@@ -176,49 +177,59 @@ Paper memakai Optuna; di sini PSO, GA, HHO.
 - **IGD+** = jarak ke reference front (0 = mencapainya).
 - Reference point HV = (1,5; 1,5) pada objektif ternormalisasi baseline.
 
-| Kasus | Konfigurasi | HV ratio (mean / min) | IGD+ (mean) | p vs paper |
-|---|---|---|---|---|
-| 1 | Hiperparameter paper (Tabel 3) | 0,965 / 0,951 | 0,0109 | — |
-| 1 | PSO-tuned | 0,991 / 0,981 | 0,0044 | < 0,001 |
-| 1 | GA-tuned | 0,991 / 0,986 | **0,0040** | < 0,001 |
-| 1 | **HHO-tuned** | **0,992** / 0,986 | 0,0042 | < 0,001 |
-| 2 | Hiperparameter paper (Tabel 6) | 0,958 / 0,950 | 0,0176 | — |
-| 2 | PSO-tuned | 0,985 / 0,971 | 0,0116 | < 0,001 |
-| 2 | GA-tuned | 0,981 / 0,962 | 0,0179 | < 0,001 |
-| 2 | **HHO-tuned** | **0,986** / 0,963 | **0,0110** | < 0,001 |
+Semua run deterministik per seed (mutasi memakai `random_state` pymoo), sehingga tabel ini bisa direproduksi persis.
 
-NSGA-II hasil tuning konsisten mencapai **≥ 98,5 %** HV front terbaik yang diketahui, dibanding ≈ 96 % dengan hiperparameter paper. Konvergensi: `fig_case*_hv_convergence.png`.
+| Kasus | Konfigurasi | HV ratio (mean / min) | IGD+ (mean) | Jumlah solusi | p vs paper |
+|---|---|---|---|---|---|
+| 1 | Hiperparameter paper (Tabel 3) | 0,962 / 0,948 | 0,0109 | 30 | — |
+| 1 | PSO-tuned | 0,992 / 0,986 | 0,0039 | 49 | < 0,001 |
+| 1 | **GA-tuned** | **0,993** / 0,986 | **0,0037** | 36 | < 0,001 |
+| 1 | HHO-tuned | 0,990 / 0,984 | 0,0058 | 21 | < 0,001 |
+| 2 | Hiperparameter paper (Tabel 6) | 0,956 / 0,946 | 0,0173 | 37 | — |
+| 2 | **PSO-tuned** | **0,983** / 0,959 | 0,0154 | 12 | < 0,001 |
+| 2 | GA-tuned | 0,980 / 0,961 | 0,0181 | 10 | < 0,001 |
+| 2 | HHO-tuned | 0,982 / **0,970** | **0,0151** | 12 | < 0,001 |
 
-### 5.3 Solusi (dari reference front)
+**Kesimpulan:**
+- NSGA-II hasil tuning mencapai **98–99 %** HV front terbaik yang diketahui, dibanding ≈ 96 % dengan hiperparameter paper (signifikan di kedua kasus).
+- Ketiga metaheuristik setara; tidak ada pemenang tunggal. HHO paling stabil saat proses tuning, sementara GA/PSO terbaik pada evaluasi akhir.
+- Konvergensi: `fig_case*_hv_convergence.png`.
 
-| Kasus | Solusi | Energi [kW] | Hemat | f_tc | Komfort ↑ | Setpoint |
-|---|---|---|---|---|---|---|
-| 1 | Baseline @24 °C | 43,67 | — | 0,497 | — | 24 |
-| 1 | A — energi minimum | 33,79 | 22,6 % | 0,661 | −33,0 % | semua 27 |
-| 1 | B — komfort terbaik | 38,77 | 11,2 % | 0,000 | +99,97 % | 25,2–25,4 (rapat 27) |
-| 1 | **C — energi min. dgn semua \|PMV\| ≤ 0,5** | 36,40 | **16,6 %** | 0,245 | +50,8 % | 25,3–27 |
-| 2 | Baseline @24 °C | 65,04 | — | 0,642 | — | 24 |
-| 2 | A — energi minimum | 47,25 | 27,3 % | 0,482 | +24,9 % | semua 27 |
-| 2 | B — komfort terbaik | 55,59 | 14,5 % | 0,000 | +99,96 % | 25,3–26,1 |
-| 2 | **C — energi min. dgn semua \|PMV\| ≤ 0,5** | 50,31 | **22,7 %** | 0,094 | +85,4 % | 25,5–27 |
+**Catatan jujur untuk kasus 2:** tuning pada budget pendek (3.000 evaluasi) memilih populasi kecil (10–20). Hasilnya front konvergen (HV naik) tetapi lebih jarang (10–12 solusi), sehingga IGD+ hanya sedikit lebih baik daripada hiperparameter paper (GA-tuned bahkan sedikit lebih buruk). Bila sebaran solusi penting, gunakan fitness HV + IGD+ atau batas bawah populasi.
+
+### 5.3 Solusi
+
+A dan B diambil dari reference front. C = energi terendah di antara semua solusi akhir yang membuat **setiap** penghuni \|PMV\| ≤ 0,5 (ISO 7730 kategori B).
+
+| Kasus | Solusi | Energi [kW] | Hemat | f_tc | Komfort ↑ | Setpoint zona [°C] | \|PMV\| terburuk |
+|---|---|---|---|---|---|---|---|
+| 1 | Baseline @24 °C | 43,67 | — | 0,497 | — | 24 | 0,53 |
+| 1 | A — energi minimum | 33,79 | 22,6 % | 0,661 | −33,0 % | semua 27 | 0,71 |
+| 1 | B — komfort terbaik | 38,68 | 11,4 % | 0,000 | +100 % | 25,2–25,4 (rapat 27) | 0,00 |
+| 1 | **C — energi min. dgn semua \|PMV\| ≤ 0,5** | 35,69 | **18,3 %** | 0,402 | +19,1 % | 26,0–27 | 0,44 |
+| 2 | Baseline @24 °C | 65,04 | — | 0,642 | — | 24 | 0,71 |
+| 2 | A — energi minimum | 47,26 | 27,3 % | 0,482 | +25,0 % | semua 27 | 0,56 |
+| 2 | B — komfort terbaik | 55,89 | 14,1 % | 0,000 | +100 % | 25,0–26,1 | 0,00 |
+| 2 | **C — energi min. dgn semua \|PMV\| ≤ 0,5** | 47,91 | **26,3 %** | 0,431 | +32,8 % | 26,5–27 | 0,50 |
 
 Detail tata letak & setpoint: `outputs/nsga2/case*_summary.json`, gambar `fig_case*_layouts.png`, Pareto `fig_case*_pareto.png`.
 
-### 5.4 Dari mana penghematannya? (dinding vs setpoint, `07_decomposition.py`)
+### 5.4 Dari mana penghematannya? (dinding vs setpoint, `07_decomposition.py`, 10 seed per varian)
 
 | Kasus | Hanya setpoint | Hanya dinding (24 °C) | Dinding + setpoint |
 |---|---|---|---|
-| 1 — hemat maks. | 21,8 % | 1,0 % | 22,6 % |
-| 1 — hemat dgn semua \|PMV\| ≤ 0,5 | 15,2 % | tidak ada solusi | **18,8 %** |
-| 2 — hemat maks. | 21,8 % | 7,0 % | 27,2 % |
-| 2 — hemat dgn semua \|PMV\| ≤ 0,5 | 20,4 % | tidak ada solusi | **25,6 %** |
+| 1 — hemat maks. | 21,8 % | 1,1 % | 22,6 % |
+| 1 — hemat dgn semua \|PMV\| ≤ 0,5 | 16,5 % | tidak ada solusi | 16,5 % |
+| 2 — hemat maks. | 21,8 % | 6,4 % | 27,3 % |
+| 2 — hemat dgn semua \|PMV\| ≤ 0,5 | 17,6 % | tidak ada solusi | **24,4 %** |
 
-Hasil 5.4 dihitung dengan 10 seed per varian, jadi angka "dinding + setpoint" sedikit berbeda dari 5.3 yang memakai reference front.
+Angka 5.4 berasal dari 10 seed per varian; 5.3 memakai 120 run sehingga sedikit lebih tinggi.
 
 **Interpretasi untuk paper:**
 - Sebagian besar penghematan berasal dari menaikkan setpoint di atas 24 °C, dan besarnya bergantung pada asumsi β.
-- Dinding bergerak menambah **+3,5 s/d +5 poin** saat kenyamanan dijaga.
-- Pada 24 °C dengan 0,5 clo, PMV ≈ −0,5 s/d −0,7 (agak dingin). Akibatnya tidak ada layout yang membuat semua penghuni |PMV| ≤ 0,5. Optimum komfort berada di 25,2–26 °C. Ini sejalan dengan semangat kebijakan Malaysia (≥ 24 °C, pakaian ringan/batik).
+- Dinding bergerak menambah **+6,8 poin** di kasus 2 (Watson, ruangan tidak seragam) saat kenyamanan dijaga, tetapi hampir nol di kasus 1 (ruangan seragam).
+- Dengan surrogate berbasis kepadatan penghuni, kontribusi dinding saja (1,1 % / 6,4 %) lebih kecil daripada di paper (≈ 11–12 %). Paper memakai jumlah orang absolut sehingga ruangan kecil dan besar dengan jumlah orang sama dianggap berintensitas sama.
+- Pada 24 °C dengan 0,5 clo, PMV ≈ −0,5 s/d −0,7 (agak dingin), sehingga tidak ada layout yang membuat semua penghuni \|PMV\| ≤ 0,5. Optimum komfort ada di 25,0–26 °C. Ini sejalan dengan semangat kebijakan Malaysia (≥ 24 °C, pakaian ringan/batik).
 
 ## 6. Asumsi dan keterbatasan
 
