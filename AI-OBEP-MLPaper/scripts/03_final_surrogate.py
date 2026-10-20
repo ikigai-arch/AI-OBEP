@@ -17,7 +17,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from obep_mlpaper.data import FEATURES, FEATURES_PAPER, TARGET, day_split, five_minute_dataset, hourly_dataset  # noqa: E402
+from obep_mlpaper.data import FEATURES, TARGET, day_split, hourly_dataset  # noqa: E402
 from obep_mlpaper.plotstyle import ALGO_COLORS, INK2, NEUTRAL, SERIES, plt  # noqa: E402
 from obep_mlpaper.surrogate import (Surrogate, WeightedEnsemble, grouped_cv_predict, make_xgb,  # noqa: E402
                                     metrics, model_zoo)
@@ -98,29 +98,12 @@ models_dir = ROOT / "outputs" / "models"
 Surrogate(fitted[chosen], FEATURES, meta).save(models_dir / "surrogate.joblib")
 (models_dir / "surrogate_meta.json").write_text(json.dumps(meta, indent=2, default=float))
 
-# ---------------- Paper protocol with the tuned hyperparameters (7 paper features)
-p12 = five_minute_dataset(n_days=12, smooth=True)
-rng = np.random.RandomState(0)
-idx = rng.permutation(len(p12))
-n = len(idx)
-itr, ite = idx[:int(.7 * n)], idx[int(.85 * n):]
-Xp, yp = p12[FEATURES_PAPER].to_numpy(), p12["target_kwh"].to_numpy()
-pp = []
-for name, prm in [("XGBoost (default)", None), *[(f"XGBoost-{a}", best["per_algo"][a]) for a in ("PSO", "GA", "HHO")]]:
-    m = model_zoo()["XGBoost"] if prm is None else make_xgb(prm)
-    m.fit(Xp[itr], yp[itr])
-    pp.append(dict(model=name, **metrics(yp[ite], np.clip(m.predict(Xp[ite]), 0, None))))
-pp.append(dict(model="Lyu et al. 2025 WeightedEnsemble_L2", R2=0.933, MAPE_pct=26.094))
-pd.DataFrame(pp).to_csv(out / "paper_protocol_tuned.csv", index=False)
-print("\nPaper protocol with tuned hyperparameters:")
-print(pd.DataFrame(pp)[["model", "R2", "MAPE_pct", "CVRMSE_pct"]].round(3).to_string(index=False))
-
 # ---------------- Figures
 conv = pd.read_csv(out / "metaheuristic_convergence.csv", index_col=0)
 fig, ax = plt.subplots(figsize=(4.6, 3.2))
 for algo, c in ALGO_COLORS.items():
     cols = [k for k in conv.columns if k.startswith(algo + "_")]
-    mu, lo, hi = conv[cols].mean(1), conv[cols].min(1), conv[cols].max(1)
+    mu, lo, hi = conv[cols].mean(axis=1), conv[cols].min(axis=1), conv[cols].max(axis=1)
     ax.plot(conv.index + 1, mu, color=c, lw=2, label=f"{algo} (mean of {len(cols)} seeds)")
     ax.fill_between(conv.index + 1, lo, hi, color=c, alpha=0.12, lw=0)
 default_cv = float(res.loc[res.model == "XGBoost (default)", "cv_RMSE"].iloc[0])

@@ -1,0 +1,75 @@
+{
+  "model": "XGBoost-PSO + monotone",
+  "features": [
+    "air_temperature",
+    "indoor_relative_humidity",
+    "occupant_count",
+    "dry_bulb_temp",
+    "outdoor_relative_humidity",
+    "wind_speed",
+    "global_horizontal_solar_radiation",
+    "hour_sin",
+    "hour_cos",
+    "hvac_schedule"
+  ],
+  "target": "HVAC power density [W/m2], hourly",
+  "train_days": [
+    "2021-09-07",
+    "2021-09-08",
+    "2021-09-13",
+    "2021-09-14",
+    "2021-09-15",
+    "2021-09-16",
+    "2021-09-17",
+    "2021-09-20",
+    "2021-09-21",
+    "2021-09-22",
+    "2021-09-24",
+    "2021-09-28",
+    "2021-09-29",
+    "2021-09-30",
+    "2021-10-01",
+    "2021-12-09",
+    "2021-12-10",
+    "2021-12-14",
+    "2021-12-15",
+    "2021-12-17",
+    "2021-12-20",
+    "2021-12-21",
+    "2021-12-22",
+    "2021-12-23"
+  ],
+  "test_days": [
+    "2021-09-10",
+    "2021-09-23",
+    "2021-09-27",
+    "2021-12-13",
+    "2021-12-16"
+  ],
+  "test_metrics": {
+    "test_R2": 0.9408448125176924,
+    "test_RMSE": 36.14608105301967,
+    "test_MAE": 22.995991688508475,
+    "test_MAPE_pct": 16.137942217382065,
+    "test_CVRMSE_pct": 27.270620617862956,
+    "test_NMBE_pct": -4.0511027066259,
+    "test_R2_operating": 0.45325348190269166
+  },
+  "xgb_params": {
+    "n_estimators": 112,
+    "learning_rate": 0.03395202879468724,
+    "max_depth": 5,
+    "min_child_weight": 9.801706146170659,
+    "subsample": 0.5653270196761706,
+    "colsample_bytree": 1.0,
+    "gamma": 0.12579194187958612,
+    "reg_lambda": 0.025658872125586835,
+    "reg_alpha": 0.006463576059004769
+  },
+  "tuned_by": "PSO",
+  "monotone_constraints": {
+    "occupant_count": 1,
+    "dry_bulb_temp": 1,
+    "global_horizontal_solar_radiation": 1
+  }
+}
