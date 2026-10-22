@@ -1,0 +1,10 @@
+skrip,detik
+01_surrogate_baseline,20
+02_tune_surrogate,945
+02b_tune_paper_protocol,123
+03_final_surrogate,33
+04_feature_importance,5
+05_tune_nsga2,333
+06_run_nsga2,364
+07_decomposition,77
+08_sensitivity,286
