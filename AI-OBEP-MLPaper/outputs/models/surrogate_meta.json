@@ -1,5 +1,5 @@
 {
-  "model": "XGBoost-PSO + monotone",
+  "model": "XGBoost-HHO",
   "features": [
     "air_temperature",
     "indoor_relative_humidity",
@@ -47,29 +47,25 @@
     "2021-12-16"
   ],
   "test_metrics": {
-    "test_R2": 0.9408448125176924,
-    "test_RMSE": 36.14608105301967,
-    "test_MAE": 22.995991688508475,
-    "test_MAPE_pct": 16.137942217382065,
-    "test_CVRMSE_pct": 27.270620617862956,
-    "test_NMBE_pct": -4.0511027066259,
-    "test_R2_operating": 0.45325348190269166
+    "test_R2": 0.689839376263399,
+    "test_RMSE": 7.439089326641769,
+    "test_MAE": 4.5685462695399055,
+    "test_MAPE_pct": 60.528290757296475,
+    "test_CVRMSE_pct": 60.85591149576599,
+    "test_NMBE_pct": -25.63106538270491,
+    "test_R2_operating": 0.18780088746405932
   },
   "xgb_params": {
-    "n_estimators": 112,
-    "learning_rate": 0.03395202879468724,
-    "max_depth": 5,
-    "min_child_weight": 9.801706146170659,
-    "subsample": 0.5653270196761706,
+    "n_estimators": 153,
+    "learning_rate": 0.024396857345293944,
+    "max_depth": 7,
+    "min_child_weight": 2.5202423244050203,
+    "subsample": 0.7402809846182794,
     "colsample_bytree": 1.0,
-    "gamma": 0.12579194187958612,
-    "reg_lambda": 0.025658872125586835,
-    "reg_alpha": 0.006463576059004769
+    "gamma": 4.9999999999999964,
+    "reg_lambda": 1.0875528303644342,
+    "reg_alpha": 0.19310634536376506
   },
-  "tuned_by": "PSO",
-  "monotone_constraints": {
-    "occupant_count": 1,
-    "dry_bulb_temp": 1,
-    "global_horizontal_solar_radiation": 1
-  }
+  "tuned_by": "HHO",
+  "monotone_constraints": null
 }
