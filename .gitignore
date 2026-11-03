@@ -1,6 +1,27 @@
+# --- Python ---
 __pycache__/
-*.pyc
-data/raw/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# --- virtual environment (JANGAN di-commit; buat ulang di tiap device) ---
+venv/
+.venv/
+env/
+.conda/
+
+# --- Jupyter / editor ---
 .ipynb_checkpoints/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- data mentah (diekstrak dari SupplementaryData.zip / diunduh dari GitHub ROBOD) ---
+data/raw/
+AI-OBEP-MLPaper/data/raw/
+
+# --- output sementara ---
 outputs/models/
 outputs/_quick/
+*.log

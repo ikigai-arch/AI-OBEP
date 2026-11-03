@@ -1,5 +1,33 @@
 # AI-OBEP — model ML untuk memahami ROBOD + replikasi paper "data-driven multi-objective optimisation … flexible building spaces"
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ikigai-arch/AI-OBEP/blob/claude/ai-obep-ml-model-16ko4o/colab_quickstart.ipynb)
+
+## Mulai di sini
+
+| Saya ingin… | Buka |
+|---|---|
+| Install di laptop/PC baru (VS Code, Anaconda, PyCharm) atau pakai Google Colab | **[docs/INSTALL.md](docs/INSTALL.md)** |
+| Langsung coba tanpa install | tombol **Open in Colab** di atas → `Runtime → Run all` |
+| Memahami ML-nya (surrogate, PSO/GA/HHO, NSGA-II, SHAP) | **[docs/MEMAHAMI_ML.md](docs/MEMAHAMI_ML.md)** |
+| Melihat hasil versi paper (R² 0,94, hemat 18–26 %) | [AI-OBEP-MLPaper/README.md](AI-OBEP-MLPaper/README.md) |
+
+Instalasi singkat (Python 3.10–3.12):
+
+```bash
+git clone https://github.com/ikigai-arch/AI-OBEP.git && cd AI-OBEP
+python -m venv .venv
+# Windows: .venv\Scripts\activate      macOS/Linux: source .venv/bin/activate
+pip install -r requirements-all.txt
+python check_setup.py --fix-data       # semua harus [ OK ]
+```
+
+Repo berisi dua sub-proyek: **v1** (folder root, `src/aiobep` + `notebooks/`, replikasi paper — dijelaskan di bawah)
+dan **v2** (`AI-OBEP-MLPaper/`, versi yang dikembangkan untuk paper). Untuk paper, pakai v2.
+
+---
+
+# v1 — replikasi paper
+
 Repo ini punya tiga tahap, masing-masing satu notebook di `notebooks/` (jalankan berurutan; logika inti ada di modul `src/aiobep/`):
 
 | Notebook | Isi | Output |

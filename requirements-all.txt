@@ -1,0 +1,7 @@
+# Semua paket untuk KEDUA sub-proyek (root `aiobep` + `AI-OBEP-MLPaper`) + Jupyter.
+# Install:  pip install -r requirements-all.txt
+# Python yang disarankan: 3.10 - 3.12 (sudah dipakai juga di 3.13).
+-r requirements.txt
+-r AI-OBEP-MLPaper/requirements.txt
+jupyter
+ipykernel
